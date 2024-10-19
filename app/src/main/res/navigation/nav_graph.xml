@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="com.example.wezzo.MainFragment"
+        android:name="com.example.wezzo.screens.home.view.MainFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/fragment_main">
 
         <action
             android:id="@+id/action_MainFragment_to_AlarmFragment"
@@ -23,7 +23,7 @@
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.example.wezzo.AlarmFragment"
+        android:name="com.example.wezzo.screens.alarm.view.AlarmFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second">
 
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/LocationFragment"
-        android:name="com.example.wezzo.LocationFragment"
+        android:name="com.example.wezzo.screens.locationManager.view.LocationFragment"
         android:label="fragment_city_list"
         tools:layout="@layout/fragment_location" >
         <action
@@ -42,7 +42,7 @@
     </fragment>
     <fragment
         android:id="@+id/SettingsFragment"
-        android:name="com.example.wezzo.SettingsFragment"
+        android:name="com.example.wezzo.screens.settings.view.SettingsFragment"
         android:label="Settings Fragment"
         tools:layout="@xml/root_preferences" >
         <action

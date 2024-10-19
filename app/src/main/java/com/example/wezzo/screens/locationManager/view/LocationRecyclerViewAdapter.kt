@@ -1,8 +1,7 @@
-package com.example.wezzo
+package com.example.wezzo.screens.locationManager.view
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 

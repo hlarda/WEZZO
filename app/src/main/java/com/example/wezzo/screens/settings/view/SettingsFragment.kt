@@ -1,7 +1,8 @@
-package com.example.wezzo
+package com.example.wezzo.screens.settings.view
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
+import com.example.wezzo.R
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
