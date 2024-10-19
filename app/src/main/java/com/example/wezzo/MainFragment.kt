@@ -11,7 +11,7 @@ import com.example.wezzo.databinding.FragmentFirstBinding
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment() {
+class MainFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
 
@@ -34,6 +34,12 @@ class FirstFragment : Fragment() {
 
         binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+        }
+        binding.buttonSettings.setOnClickListener {
+            findNavController().navigate(R.id.action_FirstFragment_to_SettingsFragment)
+        }
+        binding.buttonLocation.setOnClickListener {
+            findNavController().navigate(R.id.action_FirstFragment_to_LocationFragment)
         }
     }
 

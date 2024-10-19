@@ -7,13 +7,19 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="com.example.wezzo.FirstFragment"
+        android:name="com.example.wezzo.MainFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_first">
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_SettingsFragment"
+            app:destination="@id/SettingsFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_LocationFragment"
+            app:destination="@id/LocationFragment" />
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
@@ -23,6 +29,24 @@
 
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/LocationFragment"
+        android:name="com.example.wezzo.LocationFragment"
+        android:label="fragment_city_list"
+        tools:layout="@layout/fragment_location" >
+        <action
+            android:id="@+id/action_CityFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/SettingsFragment"
+        android:name="com.example.wezzo.SettingsFragment"
+        android:label="Settings Fragment"
+        tools:layout="@xml/root_preferences" >
+        <action
+            android:id="@+id/action_SettingsFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
 </navigation>
