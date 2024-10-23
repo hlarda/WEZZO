@@ -10,25 +10,89 @@ import kotlinx.coroutines.launch
 
 class WeatherViewModel(private val repository: Repository) : ViewModel() {
 
-    private val _responseStatus = MutableStateFlow<ResponseStatus>(ResponseStatus.Loading)
-    val responseStatus: StateFlow<ResponseStatus> = _responseStatus
+    private val _weatherResponseStatus = MutableStateFlow<WeatherResponseStatus>(WeatherResponseStatus.Loading)
+    val weatherResponseStatus: StateFlow<WeatherResponseStatus> = _weatherResponseStatus
 
-    fun fetchWeather(location: String, appId: String) {
+    private val _airPollutionResponseStatus = MutableStateFlow<AirPollutionResponseStatus>(AirPollutionResponseStatus.Loading)
+    val airPollutionResponseStatus: StateFlow<AirPollutionResponseStatus> = _airPollutionResponseStatus
+
+    private val _forecastResponseStatus = MutableStateFlow<ForecastResponseStatus>(ForecastResponseStatus.Loading)
+    val forecastResponseStatus: StateFlow<ForecastResponseStatus> = _forecastResponseStatus
+
+    fun getWeatherByCity(city: String, appId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _responseStatus.value = ResponseStatus.Loading
+            _weatherResponseStatus.value = WeatherResponseStatus.Loading
             try {
-                repository.fetchWeather(location, appId).collect { response ->
+                repository.getWeatherByCity(city, appId).collect { response ->
                     if (response.isSuccessful) {
                         response.body()?.let {
-                            _responseStatus.value = ResponseStatus.Success(it)
+                            _weatherResponseStatus.value = WeatherResponseStatus.Success(it)
                         }
                     } else {
-                        _responseStatus.value = ResponseStatus.Error("Error: ${response.code()}")
+                        _weatherResponseStatus.value = WeatherResponseStatus.Error("Error: ${response.code()}")
                     }
                 }
             } catch (e: Exception) {
-                _responseStatus.value = ResponseStatus.Error(e.message ?: "An unknown error occurred")
+                _weatherResponseStatus.value = WeatherResponseStatus.Error(e.message ?: "An unknown error occurred")
             }
         }
     }
+
+    fun getWeatherByLatAndLong(lat: Double, long: Double, appId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _weatherResponseStatus.value = WeatherResponseStatus.Loading
+            try {
+                repository.getWeatherByLatAndLong(lat, long, appId).collect { response ->
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            _weatherResponseStatus.value = WeatherResponseStatus.Success(it)
+                        }
+                    } else {
+                        _weatherResponseStatus.value = WeatherResponseStatus.Error("Error: ${response.code()}")
+                    }
+                }
+            } catch (e: Exception) {
+                _weatherResponseStatus.value = WeatherResponseStatus.Error(e.message ?: "An unknown error occurred")
+            }
+        }
+    }
+
+    fun get5DaysForecast(lat: Double, long: Double, appId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _forecastResponseStatus.value = ForecastResponseStatus.Loading
+            try {
+                repository.get5DaysForecast(lat, long, appId).collect { response ->
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            _forecastResponseStatus.value = ForecastResponseStatus.Success(it)
+                        }
+                    } else {
+                        _forecastResponseStatus.value = ForecastResponseStatus.Error("Error: ${response.code()}")
+                    }
+                }
+            } catch (e: Exception) {
+                _forecastResponseStatus.value = ForecastResponseStatus.Error(e.message ?: "An unknown error occurred")
+            }
+        }
+    }
+
+    fun getAirPollution(lat: Double, long: Double, appId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _airPollutionResponseStatus.value = AirPollutionResponseStatus.Loading
+            try {
+                repository.getAirPollution(lat, long, appId).collect { response ->
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            _airPollutionResponseStatus.value = AirPollutionResponseStatus.Success(it)
+                        }
+                    } else {
+                        _airPollutionResponseStatus.value = AirPollutionResponseStatus.Error("Error: ${response.code()}")
+                    }
+                }
+            } catch (e: Exception) {
+                _airPollutionResponseStatus.value = AirPollutionResponseStatus.Error(e.message ?: "An unknown error occurred")
+            }
+        }
+    }
+
 }

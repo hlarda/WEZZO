@@ -1,4 +1,11 @@
 import com.example.wezzo.model.*
+import com.example.wezzo.model.POJOs.Clouds
+import com.example.wezzo.model.POJOs.Coord
+import com.example.wezzo.model.POJOs.Main
+import com.example.wezzo.model.POJOs.Current
+import com.example.wezzo.model.POJOs.Sys
+import com.example.wezzo.model.POJOs.Weather
+import com.example.wezzo.model.POJOs.Wind
 import com.example.wezzo.model.remote.NetworkInterface
 import com.example.wezzo.model.remote.NetworkService
 import junit.framework.TestCase.assertEquals
@@ -24,7 +31,7 @@ class NetworkServiceTest {
     @Test
     fun `fetchWeather should return weather data`() = runTest {
         val sampleResponse = Response.success(
-            Root(
+            Current(
                 coord = Coord(lon = -0.1257, lat = 51.5085),
                 weather = listOf(Weather(id = 804, main = "Clouds", description = "overcast clouds", icon = "04n")),
                 base = "stations",
