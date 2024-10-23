@@ -50,12 +50,25 @@
             app:destination="@id/FirstFragment" />
     </fragment>
     <fragment
-        android:id="@+id/SearchFragment"
-        android:name="com.example.wezzo.screens.cities.add.view.SearchFragment"
+        android:id="@+id/addCityFragment"
+        android:name="com.example.wezzo.screens.cities.add.view.AddCityFragment"
         android:label="@string/action_add_city"
         tools:layout="@layout/fragment_add_city" >
         <action
             android:id="@+id/action_SearchFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+        <action
+            android:id="@+id/action_addCityFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.wezzo.screens.map.view.MapFragment"
+        android:label="@string/action_map"
+        tools:layout="@layout/fragment_map" >
+        <action
+            android:id="@+id/action_MapFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
 

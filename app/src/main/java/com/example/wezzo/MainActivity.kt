@@ -1,12 +1,17 @@
 package com.example.wezzo
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Looper
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -14,6 +19,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.wezzo.databinding.ActivityMainBinding
 import com.example.wezzo.model.remote.NetworkChangeReceiver
 import com.example.wezzo.model.remote.NetworkUtils
+import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeListener {
@@ -23,6 +29,9 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
     private var menu: Menu? = null
     private lateinit var networkChangeReceiver: NetworkChangeReceiver
     private var snackbar: Snackbar? = null
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,16 +59,95 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
 
         networkChangeReceiver = NetworkChangeReceiver(this)
         checkNetworkAndDisplayMessages()
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                for (location in locationResult.locations) {
+                    if (location != null) {
+                        navigateToMainFragment(location.latitude, location.longitude)
+                    }
+                }
+            }
+        }
+
+        if (checkPermissions()) {
+            startLocationUpdates()
+        } else {
+            requestPermissions()
+        }
+    }
+
+    private fun startLocationUpdates() {
+        val locationRequest = LocationRequest.create().apply {
+//            interval = 1800000 // 30 minutes
+//            fastestInterval = 900000 // 15 minutes
+//            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+
+            interval = 2000
+            fastestInterval = 100
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+        try {
+            if (checkPermissions()) {
+                fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+            } else {
+                requestPermissions()
+            }
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+            Toast.makeText(this, "Location permission is required", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
+    private fun navigateToMainFragment(latitude: Double, longitude: Double) {
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        val bundle = Bundle().apply {
+            putDouble("latitude", latitude)
+            putDouble("longitude", longitude)
+        }
+        navController.navigate(R.id.FirstFragment, bundle)
+    }
+
+    private fun checkPermissions(): Boolean {
+        return (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+    }
+
+    private fun requestPermissions() {
+        requestPermissionLauncher.launch(arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ))
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
+            startLocationUpdates()
+        } else {
+            requestPermissions()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         networkChangeReceiver.register(this)
+        startLocationUpdates()
     }
 
     override fun onPause() {
         super.onPause()
         networkChangeReceiver.unregister(this)
+        stopLocationUpdates()
     }
 
     private fun checkNetworkAndDisplayMessages() {
@@ -74,7 +162,7 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
     private fun isSearchFragmentLoaded(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         val currentDestination = navController.currentDestination
-        return currentDestination?.id == R.id.SearchFragment
+        return currentDestination?.id == R.id.addCityFragment
     }
 
     private fun showNetworkSettingsSnackbar() {
@@ -114,7 +202,7 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
             }
             R.id.action_add_city -> {
                 val navController = findNavController(R.id.nav_host_fragment_content_main)
-                navController.navigate(R.id.SearchFragment)
+                navController.navigate(R.id.addCityFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)

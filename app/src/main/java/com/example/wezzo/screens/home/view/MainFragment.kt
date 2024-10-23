@@ -40,6 +40,9 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val latitude = arguments?.getDouble("latitude") ?: 51.51
+        val longitude = arguments?.getDouble("longitude") ?: -0.13
+
         lifecycleScope.launch {
             viewModel.weatherResponseStatus.collect { responseStatus ->
                 when(responseStatus) {
@@ -56,8 +59,7 @@ class MainFragment : Fragment() {
                 }
             }
         }
-        viewModel.getWeatherByCity("London,uk", "58016d418401e5a0e8e9baef8d569514")
-
+        viewModel.getWeatherByLatAndLong(latitude, longitude, "58016d418401e5a0e8e9baef8d569514")
         lifecycleScope.launch {
             viewModel.airPollutionResponseStatus.collect { responseStatus ->
                 when(responseStatus) {
@@ -75,7 +77,7 @@ class MainFragment : Fragment() {
                 }
             }
         }
-        viewModel.getAirPollution(51.51, -0.13, "58016d418401e5a0e8e9baef8d569514")
+        viewModel.getAirPollution(latitude, longitude, "58016d418401e5a0e8e9baef8d569514")
 
         lifecycleScope.launch {
             viewModel.forecastResponseStatus.collect { responseStatus ->
@@ -93,7 +95,7 @@ class MainFragment : Fragment() {
                 }
             }
         }
-        viewModel.get5DaysForecast(51.51, -0.13, "58016d418401e5a0e8e9baef8d569514")
+        viewModel.get5DaysForecast(latitude, longitude, "58016d418401e5a0e8e9baef8d569514")
     }
 
     override fun onDestroyView() {

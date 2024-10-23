@@ -64,4 +64,11 @@
     <string name="city_manager">City Manager</string>
     <string name="add_alarm">Add Alarm</string>
     <string name="home">Home</string>
+    <string name="choose_from_map">Choose From Map</string>
+    <string name="current_location">Current Location</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="action_map">Choose Location</string>
+    <string name="confirm_location">Confirm Location</string>
+    <string name="back">Back</string>
 </resources>

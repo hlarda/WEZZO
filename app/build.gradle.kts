@@ -84,5 +84,8 @@ dependencies {
     //kotlinx-coroutines-retrofit
     implementation("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
 
-
+    // Map
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
+    implementation(libs.osmdroid.android)
 }

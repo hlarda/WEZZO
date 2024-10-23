@@ -50,9 +50,9 @@ class NetworkServiceTest {
 
 
         Mockito.`when`(networkInterface.getWeather("London,uk", "58016d418401e5a0e8e9baef8d569514"))
-            .thenReturn(flowOf(sampleResponse))
+            .thenReturn(sampleResponse)
 
-        val response = Repository(networkInterface).fetchWeather("London,uk", "58016d418401e5a0e8e9baef8d569514").first()
+        val response = Repository(networkInterface).getWeatherByCity("London,uk", "58016d418401e5a0e8e9baef8d569514").first()
         assertEquals(200, response.code())
         assertEquals("London", response.body()?.name)
         assertEquals(288.11, response.body()?.main?.temp)
