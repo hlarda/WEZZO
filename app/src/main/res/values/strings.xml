@@ -60,4 +60,8 @@
     <string name="action_location">Location Management</string>
     <string name="action_alarm">Set Alarm</string>
     <string name="action_Home">Go Home</string>
+    <string name="action_add_city">Add City</string>
+    <string name="city_manager">City Manager</string>
+    <string name="add_alarm">Add Alarm</string>
+    <string name="home">Home</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.wezzo.screens.locationManager.view
+package com.example.wezzo.screens.cities.manager.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

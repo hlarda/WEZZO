@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/FirstFragment"
         android:name="com.example.wezzo.screens.home.view.MainFragment"
-        android:label="@string/first_fragment_label"
+        android:label="@string/home"
         tools:layout="@layout/fragment_main">
 
         <action
@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/SecondFragment"
         android:name="com.example.wezzo.screens.alarm.view.AlarmFragment"
-        android:label="@string/second_fragment_label"
+        android:label="@string/add_alarm"
         tools:layout="@layout/fragment_second">
 
         <action
@@ -33,8 +33,8 @@
     </fragment>
     <fragment
         android:id="@+id/LocationFragment"
-        android:name="com.example.wezzo.screens.locationManager.view.LocationFragment"
-        android:label="fragment_city_list"
+        android:name="com.example.wezzo.screens.cities.manager.view.LocationFragment"
+        android:label="@string/city_manager"
         tools:layout="@layout/fragment_location" >
         <action
             android:id="@+id/action_CityFragment_to_FirstFragment"
@@ -43,10 +43,20 @@
     <fragment
         android:id="@+id/SettingsFragment"
         android:name="com.example.wezzo.screens.settings.view.SettingsFragment"
-        android:label="Settings Fragment"
+        android:label="@string/action_settings"
         tools:layout="@xml/root_preferences" >
         <action
             android:id="@+id/action_SettingsFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/SearchFragment"
+        android:name="com.example.wezzo.screens.cities.add.view.SearchFragment"
+        android:label="@string/action_add_city"
+        tools:layout="@layout/fragment_add_city" >
+        <action
+            android:id="@+id/action_SearchFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
+
 </navigation>

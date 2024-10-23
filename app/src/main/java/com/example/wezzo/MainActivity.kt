@@ -40,6 +40,10 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
             menu?.findItem(R.id.action_location)?.isVisible = destination.id == R.id.FirstFragment
         }
 
+        navController.addOnDestinationChangedListener() { _, destination, _ ->
+            menu?.findItem(R.id.action_add_city)?.isVisible = destination.id == R.id.LocationFragment || destination.id == R.id.FirstFragment
+        }
+
         binding.fab.setOnClickListener {
             navController.navigate(R.id.action_MainFragment_to_AlarmFragment)
         }
@@ -70,8 +74,7 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
     private fun isSearchFragmentLoaded(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         val currentDestination = navController.currentDestination
-//        return currentDestination?.id == R.id.searchFragment
-        return true
+        return currentDestination?.id == R.id.SearchFragment
     }
 
     private fun showNetworkSettingsSnackbar() {
@@ -107,6 +110,11 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
             R.id.action_settings -> {
                 val navController = findNavController(R.id.nav_host_fragment_content_main)
                 navController.navigate(R.id.SettingsFragment)
+                true
+            }
+            R.id.action_add_city -> {
+                val navController = findNavController(R.id.nav_host_fragment_content_main)
+                navController.navigate(R.id.SearchFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)
