@@ -1,66 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".screens.home.view.MainFragment">
 
-    <!-- Lottie Animation as Background -->
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/lottieNightAnimationView"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        android:scaleType="centerCrop" />
+        android:layout_height="2dp"
+        app:tabGravity="center"
+        app:tabIndicator="@drawable/tab_indicator"
+        app:tabIndicatorGravity="center"
+        app:tabMode="auto" />
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".screens.home.view.MainFragment">
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/textview_weather"
-                android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/lorem_ipsum"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textview_forecast"
-                android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/lorem_ipsum"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textview_air_pollution" />
-
-            <TextView
-                android:id="@+id/textview_air_pollution"
-                android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/lorem_ipsum"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textview_weather" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
-
-</FrameLayout>
+</LinearLayout>

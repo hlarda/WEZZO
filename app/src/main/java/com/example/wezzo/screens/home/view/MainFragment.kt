@@ -1,26 +1,27 @@
 package com.example.wezzo.screens.home.view
 
-import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.widget.ViewPager2
 import com.example.wezzo.databinding.FragmentMainBinding
+import com.example.wezzo.model.POJOs.Coord
 import com.example.wezzo.model.Repository
 import com.example.wezzo.model.remote.NetworkService
-import com.example.wezzo.screens.home.viewModel.*
+import com.example.wezzo.screens.home.viewModel.WeatherViewModel
+import com.example.wezzo.screens.home.viewModel.ViewModelFactory
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 
 class MainFragment : Fragment() {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
-
 
     private val viewModel: WeatherViewModel by viewModels {
         ViewModelFactory(
@@ -36,66 +37,45 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val latitude = arguments?.getDouble("latitude") ?: 51.51
-        val longitude = arguments?.getDouble("longitude") ?: -0.13
+        val currentLocation = Coord(lat = arguments?.getDouble("latitude") ?: 51.51, lon = arguments?.getDouble("longitude") ?: -0.13)
 
         lifecycleScope.launch {
-            viewModel.weatherResponseStatus.collect { responseStatus ->
-                when(responseStatus) {
-                    is WeatherResponseStatus.Loading -> {
-                        binding.textviewWeather.text = "Loading..."
-                    }
-                    is WeatherResponseStatus.Success -> {
-                        binding.textviewWeather.text = responseStatus.weatherResponse.toString()
-                        Log.i(TAG, "Response: "+responseStatus.weatherResponse.toString())
-                    }
-                    is WeatherResponseStatus.Error -> {
-                        binding.textviewWeather.text = responseStatus.message
-                    }
-                }
-            }
+            val savedLocations = viewModel.getSavedLocations()
+            val locations = mutableListOf(currentLocation)
+            locations.addAll(savedLocations)
+            setupViewPager(locations)
         }
-        viewModel.getWeatherByLatAndLong(latitude, longitude, "58016d418401e5a0e8e9baef8d569514")
-        lifecycleScope.launch {
-            viewModel.airPollutionResponseStatus.collect { responseStatus ->
-                when(responseStatus) {
-                    is AirPollutionResponseStatus.Loading -> {
-                        binding.textviewAirPollution.text = "Loading..."
-                    }
-                    is AirPollutionResponseStatus.Success -> {
-                        binding.textviewAirPollution.text = responseStatus.airPollutionResponse.toString()
-                        Log.i(TAG, "Response: "+responseStatus.airPollutionResponse.toString())
-                    }
-                    is AirPollutionResponseStatus.Error -> {
-                        binding.textviewAirPollution.text = responseStatus.message
-                        Log.i(TAG, "Failure: " + responseStatus.message)
-                    }
-                }
-            }
-        }
-        viewModel.getAirPollution(latitude, longitude, "58016d418401e5a0e8e9baef8d569514")
+    }
 
-        lifecycleScope.launch {
-            viewModel.forecastResponseStatus.collect { responseStatus ->
-                when(responseStatus) {
-                    is ForecastResponseStatus.Loading -> {
-                        binding.textviewForecast.text = "Loading..."
-                    }
-                    is ForecastResponseStatus.Success -> {
-                        binding.textviewForecast.text = responseStatus.forecastResponse.toString()
-                        Log.i(TAG, "Response: "+responseStatus.forecastResponse.toString())
-                    }
-                    is ForecastResponseStatus.Error -> {
-                        binding.textviewForecast.text = responseStatus.message
-                    }
-                }
+    private fun setupViewPager(locations: List<Coord>) {
+        val adapter = ViewPagerAdapter(requireActivity(), locations)
+        binding.viewPager.adapter = adapter
+
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            // Optionally set tab text or icon here
+        }.attach()
+
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                updateTitle(position)
             }
+        })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateTitle(binding.viewPager.currentItem)
+    }
+
+    private fun updateTitle(position: Int) {
+        val fragment = childFragmentManager.findFragmentByTag("f$position") as? WeatherFragment
+        fragment?.let {
+            (activity as? AppCompatActivity)?.supportActionBar?.title = it.getCityName()
         }
-        viewModel.get5DaysForecast(latitude, longitude, "58016d418401e5a0e8e9baef8d569514")
     }
 
     override fun onDestroyView() {
