@@ -1,6 +1,7 @@
 package com.example.wezzo.screens.home.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import com.example.wezzo.databinding.FragmentMainBinding
 import com.example.wezzo.model.POJOs.Coord
 import com.example.wezzo.model.Repository
 import com.example.wezzo.model.remote.NetworkService
+import com.example.wezzo.screens.home.viewModel.ForecastResponseStatus
 import com.example.wezzo.screens.home.viewModel.WeatherViewModel
 import com.example.wezzo.screens.home.viewModel.ViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator
@@ -47,6 +49,25 @@ class MainFragment : Fragment() {
             val locations = mutableListOf(currentLocation)
             locations.addAll(savedLocations)
             setupViewPager(locations)
+        }
+
+        // Call the forecast and log the output
+        viewModel.get5DaysForecast(currentLocation.lat, currentLocation.lon, "58016d418401e5a0e8e9baef8d569514")
+
+        lifecycleScope.launch {
+            viewModel.forecastResponseStatus.collect { responseStatus ->
+                when (responseStatus) {
+                    is ForecastResponseStatus.Loading -> {
+                        // Handle loading state if needed
+                    }
+                    is ForecastResponseStatus.Success -> {
+                        Log.i("MainFragment", "Forecast Response: ${responseStatus.forecastResponse}")
+                    }
+                    is ForecastResponseStatus.Error -> {
+                        Log.e("MainFragment", "Error: ${responseStatus.message}")
+                    }
+                }
+            }
         }
     }
 

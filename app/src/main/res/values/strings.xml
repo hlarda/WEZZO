@@ -71,4 +71,7 @@
     <string name="action_map">Choose Location</string>
     <string name="confirm_location">Confirm Location</string>
     <string name="back">Back</string>
+    <string name="now">Now</string>
+    <string name="forecast">Forecast</string>
+    <string name="dailyReport">Daily Report</string>
 </resources>

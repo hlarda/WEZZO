@@ -10,10 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.wezzo.databinding.FragmentWeatherBinding
 import com.example.wezzo.model.POJOs.Current
+import com.example.wezzo.model.POJOs.ForecastList
 import com.example.wezzo.model.Repository
 import com.example.wezzo.model.remote.NetworkService
+import com.example.wezzo.screens.home.viewModel.ForecastResponseStatus
 import com.example.wezzo.screens.home.viewModel.WeatherViewModel
 import com.example.wezzo.screens.home.viewModel.ViewModelFactory
 import com.example.wezzo.screens.home.viewModel.WeatherResponseStatus
@@ -51,23 +55,67 @@ class WeatherFragment : Fragment() {
             viewModel.weatherResponseStatus.collect { responseStatus ->
                 when (responseStatus) {
                     is WeatherResponseStatus.Loading -> {
-                        binding.textviewWeather.text = "Loading..."
+                        binding.apply {
+                            listOf(textviewNow, textviewCurrentTemp, textviewMaxMinTemp,
+                                textviewDesc, textviewFeelslike, weatherIcon
+                            ).forEach { it.visibility = View.GONE }
+                        }
                     }
                     is WeatherResponseStatus.Success -> {
-                        binding.textviewWeather.text = responseStatus.weatherResponse.toString()
+                        binding.apply {
+                            textviewCurrentTemp.text = "${responseStatus.weatherResponse.main.temp}°C"
+                            textviewMaxMinTemp.text = "High: ${responseStatus.weatherResponse.main.tempMax}°C . Low: ${responseStatus.weatherResponse.main.tempMin}°C"
+                            textviewDesc.text = responseStatus.weatherResponse.weather[0].description
+                            textviewFeelslike.text = "Feels like: ${responseStatus.weatherResponse.main.feelsLike}°C"
+                            Glide.with(requireContext()).load("https://openweathermap.org/img/wn/${responseStatus.weatherResponse.weather[0].icon}@2x.png").into(weatherIcon)
+
+                            textViewCloudDescription.text = responseStatus.weatherResponse.clouds.all.toString()
+                            textViewVisibilityDescription.text = responseStatus.weatherResponse.visibility.toString()
+                            textViewWindDescription.text = responseStatus.weatherResponse.wind.speed.toString()
+                            textViewHumidityDescription.text = responseStatus.weatherResponse.main.humidity.toString()
+                            textViewPressureDescription.text = responseStatus.weatherResponse.main.pressure.toString()
+                            textViewSeaLevelDescription.text = responseStatus.weatherResponse.main.seaLevel.toString()
+                        }
+                        binding.apply {
+                            listOf(textviewNow, textviewCurrentTemp, textviewMaxMinTemp,
+                                textviewDesc, textviewFeelslike, weatherIcon
+                            ).forEach { it.visibility = View.VISIBLE }
+                        }
                         Log.i("WeatherFragment", "Response: ${responseStatus.weatherResponse}")
                         responseBuf = responseStatus.weatherResponse
                         updateToolbarTitle()
                     }
                     is WeatherResponseStatus.Error -> {
-                        binding.textviewWeather.text = responseStatus.message
                         Log.e("WeatherFragment", "Error: ${responseStatus.message}")
                     }
                 }
             }
         }
-
         viewModel.getWeatherByLatAndLong(latitude, longitude, "58016d418401e5a0e8e9baef8d569514")
+
+        lifecycleScope.launch {
+            viewModel.forecastResponseStatus.collect { responseStatus ->
+                when (responseStatus) {
+                    is ForecastResponseStatus.Loading -> {
+                        // Handle loading state if needed
+                    }
+                    is ForecastResponseStatus.Success -> {
+                        setupRecyclerView(responseStatus.forecastResponse.list)
+                        Log.i("WeatherFragment", "Response: ${responseStatus.forecastResponse}")
+                    }
+                    is ForecastResponseStatus.Error -> {
+                        Log.e("WeatherFragment", "Error: ${responseStatus.message}")
+                    }
+                }
+            }
+        }
+        viewModel.get5DaysForecast(latitude, longitude, "58016d418401e5a0e8e9baef8d569514")
+    }
+
+    private fun setupRecyclerView(forecastList: List<ForecastList>) {
+        val adapter = ForecastAdapter(forecastList)
+        binding.recyclerViewForecast.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.recyclerViewForecast.adapter = adapter
     }
 
     override fun onResume() {
