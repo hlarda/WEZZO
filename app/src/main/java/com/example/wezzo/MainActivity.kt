@@ -8,6 +8,7 @@ import android.os.Looper
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
+    private var hasNavigatedToHome = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,10 +49,8 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             menu?.findItem(R.id.action_location)?.isVisible = destination.id == R.id.FirstFragment
-        }
-
-        navController.addOnDestinationChangedListener() { _, destination, _ ->
             menu?.findItem(R.id.action_add_city)?.isVisible = destination.id == R.id.LocationFragment || destination.id == R.id.FirstFragment
+            updateFabVisibility(destination.id)
         }
 
         binding.fab.setOnClickListener {
@@ -65,7 +65,8 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 for (location in locationResult.locations) {
-                    if (location != null) {
+                    if (location != null && !hasNavigatedToHome) {
+                        hasNavigatedToHome = true
                         navigateToMainFragment(location.latitude, location.longitude)
                     }
                 }
@@ -213,5 +214,9 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
+    }
+
+    private fun updateFabVisibility(destinationId: Int) {
+        binding.fab.visibility = if (destinationId == R.id.mapFragment) View.GONE else View.VISIBLE
     }
 }
