@@ -1,4 +1,4 @@
-package com.example.wezzo.screens.home.viewModel
+package com.example.wezzo.screens.home.view
 
 import com.example.wezzo.model.POJOs.AirPollution
 import com.example.wezzo.model.POJOs.Current

@@ -16,11 +16,10 @@ import com.example.wezzo.databinding.FragmentWeatherBinding
 import com.example.wezzo.model.POJOs.Current
 import com.example.wezzo.model.POJOs.ForecastList
 import com.example.wezzo.model.Repository
+import com.example.wezzo.model.local.dbCityDatabase
 import com.example.wezzo.model.remote.NetworkService
-import com.example.wezzo.screens.home.viewModel.ForecastResponseStatus
-import com.example.wezzo.screens.home.viewModel.WeatherViewModel
-import com.example.wezzo.screens.home.viewModel.ViewModelFactory
-import com.example.wezzo.screens.home.viewModel.WeatherResponseStatus
+import com.example.wezzo.viewModel.WeatherViewModel
+import com.example.wezzo.viewModel.ViewModelFactory
 import kotlinx.coroutines.launch
 
 class WeatherFragment : Fragment() {
@@ -32,7 +31,10 @@ class WeatherFragment : Fragment() {
 
     private val viewModel: WeatherViewModel by viewModels {
         ViewModelFactory(
-            Repository(NetworkService.retrofitService)
+            Repository(
+                NetworkService.retrofitService,
+                dbCityDatabase.getDatabase(requireContext()).cityDao()
+            )
         )
     }
 
@@ -63,10 +65,10 @@ class WeatherFragment : Fragment() {
                     }
                     is WeatherResponseStatus.Success -> {
                         binding.apply {
-                            textviewCurrentTemp.text = "${responseStatus.weatherResponse.main.temp}°C"
-                            textviewMaxMinTemp.text = "High: ${responseStatus.weatherResponse.main.tempMax}°C . Low: ${responseStatus.weatherResponse.main.tempMin}°C"
+                            textviewCurrentTemp.text = "${responseStatus.weatherResponse.main.temp}°F"
+                            textviewMaxMinTemp.text = "High: ${responseStatus.weatherResponse.main.tempMax}°F . Low: ${responseStatus.weatherResponse.main.tempMin}°F"
                             textviewDesc.text = responseStatus.weatherResponse.weather[0].description
-                            textviewFeelslike.text = "Feels like: ${responseStatus.weatherResponse.main.feelsLike}°C"
+                            textviewFeelslike.text = "Feels like: ${responseStatus.weatherResponse.main.feelsLike}°F"
                             Glide.with(requireContext()).load("https://openweathermap.org/img/wn/${responseStatus.weatherResponse.weather[0].icon}@2x.png").into(weatherIcon)
 
                             textViewCloudDescription.text = responseStatus.weatherResponse.clouds.all.toString()

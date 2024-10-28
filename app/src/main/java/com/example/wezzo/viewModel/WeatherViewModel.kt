@@ -1,9 +1,12 @@
-package com.example.wezzo.screens.home.viewModel
+package com.example.wezzo.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wezzo.model.POJOs.Coord
 import com.example.wezzo.model.Repository
+import com.example.wezzo.screens.home.view.AirPollutionResponseStatus
+import com.example.wezzo.screens.home.view.ForecastResponseStatus
+import com.example.wezzo.screens.home.view.WeatherResponseStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,13 +14,19 @@ import kotlinx.coroutines.launch
 
 class WeatherViewModel(private val repository: Repository) : ViewModel() {
 
-    private val _weatherResponseStatus = MutableStateFlow<WeatherResponseStatus>(WeatherResponseStatus.Loading)
+    private val _weatherResponseStatus = MutableStateFlow<WeatherResponseStatus>(
+        WeatherResponseStatus.Loading
+    )
     val weatherResponseStatus: StateFlow<WeatherResponseStatus> = _weatherResponseStatus
 
-    private val _airPollutionResponseStatus = MutableStateFlow<AirPollutionResponseStatus>(AirPollutionResponseStatus.Loading)
+    private val _airPollutionResponseStatus = MutableStateFlow<AirPollutionResponseStatus>(
+        AirPollutionResponseStatus.Loading
+    )
     val airPollutionResponseStatus: StateFlow<AirPollutionResponseStatus> = _airPollutionResponseStatus
 
-    private val _forecastResponseStatus = MutableStateFlow<ForecastResponseStatus>(ForecastResponseStatus.Loading)
+    private val _forecastResponseStatus = MutableStateFlow<ForecastResponseStatus>(
+        ForecastResponseStatus.Loading
+    )
     val forecastResponseStatus: StateFlow<ForecastResponseStatus> = _forecastResponseStatus
 
     fun getWeatherByCity(city: String, appId: String) {
@@ -30,11 +39,13 @@ class WeatherViewModel(private val repository: Repository) : ViewModel() {
                             _weatherResponseStatus.value = WeatherResponseStatus.Success(it)
                         }
                     } else {
-                        _weatherResponseStatus.value = WeatherResponseStatus.Error("Error: ${response.code()}")
+                        _weatherResponseStatus.value =
+                            WeatherResponseStatus.Error("Error: ${response.code()}")
                     }
                 }
             } catch (e: Exception) {
-                _weatherResponseStatus.value = WeatherResponseStatus.Error(e.message ?: "An unknown error occurred")
+                _weatherResponseStatus.value =
+                    WeatherResponseStatus.Error(e.message ?: "An unknown error occurred")
             }
         }
     }
@@ -49,11 +60,13 @@ class WeatherViewModel(private val repository: Repository) : ViewModel() {
                             _weatherResponseStatus.value = WeatherResponseStatus.Success(it)
                         }
                     } else {
-                        _weatherResponseStatus.value = WeatherResponseStatus.Error("Error: ${response.code()}")
+                        _weatherResponseStatus.value =
+                            WeatherResponseStatus.Error("Error: ${response.code()}")
                     }
                 }
             } catch (e: Exception) {
-                _weatherResponseStatus.value = WeatherResponseStatus.Error(e.message ?: "An unknown error occurred")
+                _weatherResponseStatus.value =
+                    WeatherResponseStatus.Error(e.message ?: "An unknown error occurred")
             }
         }
     }
@@ -68,11 +81,13 @@ class WeatherViewModel(private val repository: Repository) : ViewModel() {
                             _forecastResponseStatus.value = ForecastResponseStatus.Success(it)
                         }
                     } else {
-                        _forecastResponseStatus.value = ForecastResponseStatus.Error("Error: ${response.code()}")
+                        _forecastResponseStatus.value =
+                            ForecastResponseStatus.Error("Error: ${response.code()}")
                     }
                 }
             } catch (e: Exception) {
-                _forecastResponseStatus.value = ForecastResponseStatus.Error(e.message ?: "An unknown error occurred")
+                _forecastResponseStatus.value =
+                    ForecastResponseStatus.Error(e.message ?: "An unknown error occurred")
             }
         }
     }
@@ -84,14 +99,17 @@ class WeatherViewModel(private val repository: Repository) : ViewModel() {
                 repository.getAirPollution(lat, long, appId).collect { response ->
                     if (response.isSuccessful) {
                         response.body()?.let {
-                            _airPollutionResponseStatus.value = AirPollutionResponseStatus.Success(it)
+                            _airPollutionResponseStatus.value =
+                                AirPollutionResponseStatus.Success(it)
                         }
                     } else {
-                        _airPollutionResponseStatus.value = AirPollutionResponseStatus.Error("Error: ${response.code()}")
+                        _airPollutionResponseStatus.value =
+                            AirPollutionResponseStatus.Error("Error: ${response.code()}")
                     }
                 }
             } catch (e: Exception) {
-                _airPollutionResponseStatus.value = AirPollutionResponseStatus.Error(e.message ?: "An unknown error occurred")
+                _airPollutionResponseStatus.value =
+                    AirPollutionResponseStatus.Error(e.message ?: "An unknown error occurred")
             }
         }
     }

@@ -4,46 +4,43 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import com.example.wezzo.databinding.CardCityBinding
+import com.example.wezzo.model.local.dbCity
 
-import com.example.wezzo.placeholder.PlaceholderContent.PlaceholderItem
-import com.example.wezzo.databinding.FragmentLocationBinding
-
-/**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for your data type.
- */
-class locationRecyclerViewAdapter(
-    private val values: List<PlaceholderItem>
-) : RecyclerView.Adapter<locationRecyclerViewAdapter.ViewHolder>() {
+class LocationRecyclerViewAdapter(
+    private var values: MutableList<dbCity>
+) : RecyclerView.Adapter<LocationRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-
         return ViewHolder(
-            FragmentLocationBinding.inflate(
+            CardCityBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
         )
-
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.idView.text = item.id
-        holder.contentView.text = item.content
+        holder.cityTextView.text = item.name
+        holder.countryTextView.text = item.country
     }
 
     override fun getItemCount(): Int = values.size
 
-    inner class ViewHolder(binding: FragmentLocationBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        val idView: TextView = binding.itemNumber
-        val contentView: TextView = binding.content
-
-        override fun toString(): String {
-            return super.toString() + " '" + contentView.text + "'"
-        }
+    fun updateLocations(newValues: List<dbCity>) {
+        values = newValues.toMutableList()
+        notifyDataSetChanged()
     }
 
+    fun getCityAtPosition(position: Int): dbCity {
+        return values[position]
+    }
+
+    inner class ViewHolder(binding: CardCityBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        val cityTextView: TextView = binding.cityTextView
+        val countryTextView: TextView = binding.countryTextView
+    }
 }

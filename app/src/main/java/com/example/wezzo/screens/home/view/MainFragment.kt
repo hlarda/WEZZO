@@ -13,10 +13,10 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.wezzo.databinding.FragmentMainBinding
 import com.example.wezzo.model.POJOs.Coord
 import com.example.wezzo.model.Repository
+import com.example.wezzo.model.local.dbCityDatabase
 import com.example.wezzo.model.remote.NetworkService
-import com.example.wezzo.screens.home.viewModel.ForecastResponseStatus
-import com.example.wezzo.screens.home.viewModel.WeatherViewModel
-import com.example.wezzo.screens.home.viewModel.ViewModelFactory
+import com.example.wezzo.viewModel.WeatherViewModel
+import com.example.wezzo.viewModel.ViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 
@@ -27,7 +27,10 @@ class MainFragment : Fragment() {
 
     private val viewModel: WeatherViewModel by viewModels {
         ViewModelFactory(
-            Repository(NetworkService.retrofitService)
+            Repository(
+                NetworkService.retrofitService,
+                dbCityDatabase.getDatabase(requireContext()).cityDao()
+            )
         )
     }
 

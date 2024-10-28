@@ -18,7 +18,7 @@ class ForecastAdapter(private val forecastList: List<ForecastList>) :
         @SuppressLint("SetTextI18n")
         fun bind(forecastItem: ForecastList) {
             binding.apply {
-                textviewTemp.text = "${forecastItem.main.temp}°C"
+                textviewTemp.text = "${forecastItem.main.temp}°F"
                 textviewDescription.text = forecastItem.weather[0].description
                 textviewDate.text = forecastItem.dtTxt
                 Log.i(TAG, "forecastItem.dtTxt: "+ forecastItem.dtTxt)

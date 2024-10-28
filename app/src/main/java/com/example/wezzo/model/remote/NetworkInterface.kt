@@ -3,6 +3,7 @@ package com.example.wezzo.model.remote
 import com.example.wezzo.model.POJOs.AirPollution
 import com.example.wezzo.model.POJOs.Current
 import com.example.wezzo.model.POJOs.Forecast
+import com.example.wezzo.model.POJOs.GeocodingResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -34,6 +35,14 @@ interface NetworkInterface {
         @Query("lon") long: Double,
         @Query("appid") appId: String
     ):Response<AirPollution>
+
+    @GET("geo/1.0/reverse")
+    suspend fun getCityAndCountry(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+        @Query("limit") limit: Int = 5,
+        @Query("appid") appId: String
+    ): Response<List<GeocodingResponse>>
 }
 
 /*

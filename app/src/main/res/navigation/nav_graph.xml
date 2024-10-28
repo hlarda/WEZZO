@@ -35,7 +35,7 @@
         android:id="@+id/LocationFragment"
         android:name="com.example.wezzo.screens.cities.manager.view.LocationFragment"
         android:label="@string/city_manager"
-        tools:layout="@layout/fragment_location" >
+        tools:layout="@layout/card_city" >
         <action
             android:id="@+id/action_CityFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
