@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
         navController.addOnDestinationChangedListener { _, destination, _ ->
             menu?.findItem(R.id.action_location)?.isVisible = destination.id == R.id.FirstFragment
             menu?.findItem(R.id.action_add_city)?.isVisible = destination.id == R.id.LocationFragment || destination.id == R.id.FirstFragment
-            updateFabVisibility(destination.id)
+            updateFloatingVisibility(destination.id)
         }
 
         binding.fab.setOnClickListener {
@@ -216,7 +216,7 @@ class MainActivity : AppCompatActivity(), NetworkChangeReceiver.NetworkChangeLis
                 || super.onSupportNavigateUp()
     }
 
-    private fun updateFabVisibility(destinationId: Int) {
-        binding.fab.visibility = if (destinationId == R.id.mapFragment) View.GONE else View.VISIBLE
+    private fun updateFloatingVisibility(destinationId: Int) {
+        binding.fab.visibility = if ((destinationId == R.id.mapFragment) || (destinationId == R.id.SecondFragment)) View.GONE else View.VISIBLE
     }
 }

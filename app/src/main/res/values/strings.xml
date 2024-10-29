@@ -74,4 +74,5 @@
     <string name="now">Now</string>
     <string name="forecast">Forecast</string>
     <string name="dailyReport">Daily Report</string>
+    <string name="set_alarm">Set Alarm</string>
 </resources>

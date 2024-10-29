@@ -6,6 +6,7 @@ import com.example.wezzo.model.POJOs.Current
 import com.example.wezzo.model.POJOs.Sys
 import com.example.wezzo.model.POJOs.Weather
 import com.example.wezzo.model.POJOs.Wind
+import com.example.wezzo.model.local.dbCityDao
 import com.example.wezzo.model.remote.NetworkInterface
 import com.example.wezzo.model.remote.NetworkService
 import junit.framework.TestCase.assertEquals
@@ -20,11 +21,13 @@ import kotlinx.coroutines.flow.flowOf
 class NetworkServiceTest {
 
     private lateinit var networkService: NetworkService
+    private lateinit var cityDao: dbCityDao
     private lateinit var networkInterface: NetworkInterface
 
     @Before
     fun setUp() {
         networkInterface = Mockito.mock(NetworkInterface::class.java)
+        cityDao = Mockito.mock(dbCityDao::class.java)
         networkService = NetworkService
     }
 
@@ -52,7 +55,7 @@ class NetworkServiceTest {
         Mockito.`when`(networkInterface.getWeather("London,uk", "58016d418401e5a0e8e9baef8d569514"))
             .thenReturn(sampleResponse)
 
-        val response = Repository(networkInterface).getWeatherByCity("London,uk", "58016d418401e5a0e8e9baef8d569514").first()
+        val response = Repository(networkInterface, cityDao).getWeatherByCity("London,uk", "58016d418401e5a0e8e9baef8d569514").first()
         assertEquals(200, response.code())
         assertEquals("London", response.body()?.name)
         assertEquals(288.11, response.body()?.main?.temp)
