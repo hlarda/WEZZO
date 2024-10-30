@@ -32,8 +32,12 @@
         </activity>
         <receiver android:name=".screens.alarm.view.AlarmReceiver"/>
         <receiver android:name=".screens.alarm.view.DismissAlarmReceiver"/>
+
+        <service
+            android:name=".screens.alarm.view.AlarmService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="false"/>
+
     </application>
-
-
 
 </manifest>

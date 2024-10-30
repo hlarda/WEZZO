@@ -18,10 +18,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.wezzo.R
 import com.example.wezzo.model.POJOs.Alarm
-import com.example.wezzo.model.Repository
 import com.example.wezzo.viewModel.AlarmViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,11 +30,16 @@ class AlarmReceiver : BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onReceive(context: Context, intent: Intent) {
         val alarmId = intent.getLongExtra(EXTRA_ALARM_ID, -1)
-        val alarmType = intent.getStringExtra(EXTRA_ALARM_TYPE) ?: "ALARM" // Default to notification
+        val alarmType = intent.getStringExtra(EXTRA_ALARM_TYPE) ?: "ALARM"
 
         Log.d("AlarmReceiver", "Alarm triggered: ID $alarmId, Type $alarmType")
 
-        // Show the alarm notification with the appropriate settings based on type
+        // Start the AlarmService only if the alarm type is "ALARM"
+        if (alarmType == "ALARM") {
+            val serviceIntent = Intent(context, AlarmService::class.java)
+            context.startForegroundService(serviceIntent)
+        }
+
         showAlarmNotification(context, alarmId, alarmType)
         deleteAndCancelAlarm(context, alarmId)
     }
@@ -139,7 +142,7 @@ class AlarmReceiver : BroadcastReceiver() {
             cancelAlarm(context, alarmId)
 
             // Delete the alarm from the database
-            val  viewModel: AlarmViewModel = AlarmViewModel(context)
+            val viewModel: AlarmViewModel = AlarmViewModel(context)
             CoroutineScope(Dispatchers.IO).launch {
                 viewModel.deleteAlarm(alarmId)
             }
