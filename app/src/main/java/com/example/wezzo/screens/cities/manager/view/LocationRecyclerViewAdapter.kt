@@ -1,5 +1,6 @@
 package com.example.wezzo.screens.cities.manager.view
 
+import android.annotation.SuppressLint
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,7 +9,8 @@ import com.example.wezzo.databinding.CardCityBinding
 import com.example.wezzo.model.local.dbCity
 
 class LocationRecyclerViewAdapter(
-    private var values: MutableList<dbCity>
+    private var values: MutableList<dbCity>,
+    private val onItemClick: (Int) -> Unit
 ) : RecyclerView.Adapter<LocationRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,10 +27,14 @@ class LocationRecyclerViewAdapter(
         val item = values[position]
         holder.cityTextView.text = item.name
         holder.countryTextView.text = item.country
+        holder.itemView.setOnClickListener{
+            onItemClick(position)
+        }
     }
 
     override fun getItemCount(): Int = values.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateLocations(newValues: List<dbCity>) {
         values = newValues.toMutableList()
         notifyDataSetChanged()

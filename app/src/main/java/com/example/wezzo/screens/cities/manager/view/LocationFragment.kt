@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.airbnb.lottie.LottieAnimationView
 import com.example.wezzo.R
 import com.example.wezzo.model.Repository
@@ -48,9 +49,13 @@ class LocationFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         val emptyLocationAnimation = view.findViewById<LottieAnimationView>(R.id.emptyLocationAnimation)
 
-        // Set the adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
-        val adapter = LocationRecyclerViewAdapter(mutableListOf())
+        val adapter = LocationRecyclerViewAdapter(mutableListOf()) { position ->
+            val bundle = Bundle().apply {
+                putInt("location_index", position)
+            }
+            findNavController().navigate(R.id.action_CityFragment_to_FirstFragment, bundle)
+        }
         recyclerView.adapter = adapter
 
         lifecycleScope.launch {

@@ -52,6 +52,9 @@ class MainFragment : Fragment() {
                 val locations = mutableListOf(currentLocation)
                 locations.addAll(savedLocations.map { dbCity -> Coord(lat = dbCity.latitude, lon = dbCity.longitude) })
                 _binding?.let { setupViewPager(locations) }
+
+                val locationIndex = arguments?.getInt("location_index") ?: 0
+                _binding?.viewPager?.currentItem = locationIndex + 1
             }
         }
 
