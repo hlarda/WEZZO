@@ -37,7 +37,7 @@ class CityViewModel(private val repository: Repository) : ViewModel() {
         }
     }
 
-    fun getSavedLocations() = repository.getCountries()
+    fun getSavedLocations() = repository.getCities()
 
     fun insertCity(city: dbCity) {
         viewModelScope.launch {

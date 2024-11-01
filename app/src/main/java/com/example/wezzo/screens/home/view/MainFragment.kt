@@ -48,10 +48,11 @@ class MainFragment : Fragment() {
         val currentLocation = Coord(lat = arguments?.getDouble("latitude") ?: 51.51, lon = arguments?.getDouble("longitude") ?: -0.13)
 
         lifecycleScope.launch {
-            val savedLocations = viewModel.getSavedLocations()
-            val locations = mutableListOf(currentLocation)
-            locations.addAll(savedLocations)
-            setupViewPager(locations)
+            viewModel.getSavedLocations().collect { savedLocations ->
+                val locations = mutableListOf(currentLocation)
+                locations.addAll(savedLocations.map { dbCity -> Coord(lat = dbCity.latitude, lon = dbCity.longitude) })
+                _binding?.let { setupViewPager(locations) }
+            }
         }
 
         // Call the forecast and log the output

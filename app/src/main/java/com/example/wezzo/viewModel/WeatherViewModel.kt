@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wezzo.model.POJOs.Coord
 import com.example.wezzo.model.Repository
+import com.example.wezzo.model.local.dbCity
 import com.example.wezzo.screens.home.view.AirPollutionResponseStatus
 import com.example.wezzo.screens.home.view.ForecastResponseStatus
 import com.example.wezzo.screens.home.view.WeatherResponseStatus
@@ -114,9 +115,6 @@ class WeatherViewModel(private val repository: Repository) : ViewModel() {
         }
     }
 
-    fun getSavedLocations(): List<Coord> {
-        /*return list as if we have one */
-        return listOf(Coord(lat = 40.670, lon = -73.940), Coord(lat = 34.110, lon = -118.410), Coord(lat = 41.840, lon = -87.680))
-    }
+    fun getSavedLocations() = repository.getCities();
 
 }

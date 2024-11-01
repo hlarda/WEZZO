@@ -26,7 +26,7 @@ class Repository(private val networkService: NetworkInterface, private val cityD
         emit(networkService.getAirPollution(lat, long, appId))
     }
 
-    fun         getCountries(): Flow<List<dbCity>> = cityDatabase.getAllCities()
+    fun         getCities(): Flow<List<dbCity>> = cityDatabase.getAllCities()
     suspend fun insertCity(city: dbCity) = cityDatabase.insertCity(city)
     suspend fun deleteCity(city: dbCity) = cityDatabase.deleteCity(city)
 
