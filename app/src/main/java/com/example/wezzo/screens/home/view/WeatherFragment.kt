@@ -33,8 +33,10 @@ class WeatherFragment : Fragment() {
         ViewModelFactory(
             Repository(
                 NetworkService.retrofitService,
-                dbCityDatabase.getDatabase(requireContext()).cityDao()
-            )
+                dbCityDatabase.getDatabase(requireContext()).cityDao(),
+                requireContext()
+            ),
+            requireContext()
         )
     }
 
@@ -68,7 +70,7 @@ class WeatherFragment : Fragment() {
                             textviewCurrentTemp.text = "${responseStatus.weatherResponse.main.temp}°F"
                             textviewMaxMinTemp.text = "High: ${responseStatus.weatherResponse.main.tempMax}°F . Low: ${responseStatus.weatherResponse.main.tempMin}°F"
                             textviewDesc.text = responseStatus.weatherResponse.weather[0].description
-                            textviewFeelslike.text = "Feels like: ${responseStatus.weatherResponse.main.feelsLike}°F"
+                            textviewFeelslike.text = "${responseStatus.weatherResponse.main.feelsLike}°F"
                             Glide.with(requireContext()).load("https://openweathermap.org/img/wn/${responseStatus.weatherResponse.weather[0].icon}@2x.png").into(weatherIcon)
 
                             textViewCloudDescription.text = responseStatus.weatherResponse.clouds.all.toString()

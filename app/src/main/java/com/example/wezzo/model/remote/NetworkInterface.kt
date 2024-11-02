@@ -19,14 +19,18 @@ interface NetworkInterface {
     suspend fun getWeatherByLatAndLong(
         @Query("lat") lat:  Double,
         @Query("lon") long: Double,
-        @Query("appid") appId: String
+        @Query("appid") appId: String,
+        @Query("units") units: String,
+        @Query("lang") lang: String
     ):Response<Current>
 
     @GET("data/2.5/forecast")
     suspend fun get5DaysForecast(
         @Query("lat") lat:  Double,
         @Query("lon") long: Double,
-        @Query("appid") appId: String
+        @Query("appid") appId: String,
+        @Query("units") units: String,
+        @Query("lang") lang: String
     ):Response<Forecast>
 
     @GET("data/2.5/air_pollution")
@@ -40,7 +44,6 @@ interface NetworkInterface {
     suspend fun getCityAndCountry(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("limit") limit: Int = 5,
         @Query("appid") appId: String
     ): Response<List<GeocodingResponse>>
 }

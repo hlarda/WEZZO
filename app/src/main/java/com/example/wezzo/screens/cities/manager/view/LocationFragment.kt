@@ -28,8 +28,10 @@ class LocationFragment : Fragment() {
         ViewModelFactory(
             Repository(
                 NetworkService.retrofitService,
-                dbCityDatabase.getDatabase(requireContext()).cityDao()
-            )
+                dbCityDatabase.getDatabase(requireContext()).cityDao(),
+                requireContext() 
+            ),
+            requireContext()
         )
     }
     private var columnCount = 1

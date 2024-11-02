@@ -41,8 +41,10 @@ class MapFragment : Fragment(), MapEventsReceiver {
         ViewModelFactory(
             Repository(
                 NetworkService.retrofitService,
-                dbCityDatabase.getDatabase(requireContext()).cityDao()
-            )
+                dbCityDatabase.getDatabase(requireContext()).cityDao(),
+                requireContext()
+            ),
+            requireContext()
         )
     }
 
