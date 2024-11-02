@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.wezzo.databinding.FragmentWeatherBinding
@@ -52,6 +53,9 @@ class WeatherFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val unitPreference = sharedPreferences.getString("units", "metric")
+
         val latitude = arguments?.getDouble("latitude") ?: 0.0
         val longitude = arguments?.getDouble("longitude") ?: 0.0
 
@@ -60,18 +64,21 @@ class WeatherFragment : Fragment() {
                 when (responseStatus) {
                     is WeatherResponseStatus.Loading -> {
                         binding.apply {
-                            listOf(textviewNow, textviewCurrentTemp, textviewMaxMinTemp,
+                            listOf(textviewNow, textviewCurrentTemp, minTemp, maxTemp, textView8, textView11, unit, textviewFeelslike2,
                                 textviewDesc, textviewFeelslike, weatherIcon
                             ).forEach { it.visibility = View.GONE }
                         }
                     }
                     is WeatherResponseStatus.Success -> {
                         binding.apply {
-                            textviewCurrentTemp.text = "${responseStatus.weatherResponse.main.temp}°F"
-                            textviewMaxMinTemp.text = "High: ${responseStatus.weatherResponse.main.tempMax}°F . Low: ${responseStatus.weatherResponse.main.tempMin}°F"
+                            textviewCurrentTemp.text = "${responseStatus.weatherResponse.main.temp}"
+                            maxTemp.text = responseStatus.weatherResponse.main.tempMax.toString()
+                            minTemp.text = responseStatus.weatherResponse.main.tempMin.toString()
                             textviewDesc.text = responseStatus.weatherResponse.weather[0].description
                             textviewFeelslike.text = "${responseStatus.weatherResponse.main.feelsLike}°F"
                             Glide.with(requireContext()).load("https://openweathermap.org/img/wn/${responseStatus.weatherResponse.weather[0].icon}@2x.png").into(weatherIcon)
+                            unit.text = if (unitPreference == "metric") "°C" else "°F"
+
 
                             textViewCloudDescription.text = responseStatus.weatherResponse.clouds.all.toString()
                             textViewVisibilityDescription.text = responseStatus.weatherResponse.visibility.toString()
@@ -81,7 +88,7 @@ class WeatherFragment : Fragment() {
                             textViewSeaLevelDescription.text = responseStatus.weatherResponse.main.seaLevel.toString()
                         }
                         binding.apply {
-                            listOf(textviewNow, textviewCurrentTemp, textviewMaxMinTemp,
+                            listOf(textviewNow, textviewCurrentTemp, minTemp, maxTemp, textView8, textView11, unit, textviewFeelslike2,
                                 textviewDesc, textviewFeelslike, weatherIcon
                             ).forEach { it.visibility = View.VISIBLE }
                         }
