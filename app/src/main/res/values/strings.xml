@@ -51,4 +51,7 @@
     <string name="pressure_description">Pressure description</string>
     <string name="sea_level">Sea Level</string>
     <string name="sea_level_description">Sea Level description</string>
+    <string name="wezzo">WEZZO</string>
+    <string name="wezzoSplash">WEZZO</string>
+    <string name="stay_connected_with_the_places_that_matter">Stay connected with the places that matter.</string>
 </resources>
