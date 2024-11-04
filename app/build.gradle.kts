@@ -135,4 +135,10 @@ dependencies {
 
     testImplementation ("io.mockk:mockk:1.12.0")
 
+    implementation("com.google.guava:guava:23.0") {
+        exclude(group = "com.google.guava", module = "listenablefuture")
+    }
+}
+configurations.all {
+    exclude(group = "com.google.guava", module = "listenablefuture")
 }
