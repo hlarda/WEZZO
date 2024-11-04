@@ -23,7 +23,9 @@ import com.example.wezzo.model.POJOs.Alarm
 import com.example.wezzo.viewModel.AlarmViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AlarmReceiver : BroadcastReceiver() {
 
@@ -34,15 +36,16 @@ class AlarmReceiver : BroadcastReceiver() {
 
         Log.d("AlarmReceiver", "Alarm triggered: ID $alarmId, Type $alarmType")
 
-        // Start the AlarmService only if the alarm type is "ALARM"
-        if (alarmType == "ALARM") {
-            val serviceIntent = Intent(context, AlarmService::class.java)
-            context.startForegroundService(serviceIntent)
-        }
+        CoroutineScope(Dispatchers.IO).launch {
+            deleteAndCancelAlarm(context, alarmId)
 
-        showAlarmNotification(context, alarmId, alarmType)
-        deleteAndCancelAlarm(context, alarmId)
+            // Switch to main thread to show the notification
+            withContext(Dispatchers.Main) {
+                showAlarmNotification(context, alarmId, alarmType)
+            }
+        }
     }
+
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun showAlarmNotification(context: Context, alarmId: Long, alarmType: String) {
@@ -137,14 +140,18 @@ class AlarmReceiver : BroadcastReceiver() {
             Log.d("AlarmReceiver", "Alarm canceled: ID $alarmId")
         }
 
-        private fun deleteAndCancelAlarm(context: Context, alarmId: Long) {
-            // Cancel the alarm
+        // Make deleteAndCancelAlarm public
+        fun deleteAndCancelAlarm(context: Context, alarmId: Long) {
+            Log.d("AlarmReceiver", "Attempting to delete alarm from database with ID: $alarmId")
             cancelAlarm(context, alarmId)
-
-            // Delete the alarm from the database
-            val viewModel: AlarmViewModel = AlarmViewModel(context)
+            val viewModel = AlarmViewModel(context)
             CoroutineScope(Dispatchers.IO).launch {
                 viewModel.deleteAlarm(alarmId)
+                Log.d("AlarmReceiver", "Alarm deleted from database with ID: $alarmId")
+                delay(100)
+                viewModel.getAlarms().collect { alarms ->
+                    Log.d("AlarmReceiver", "Remaining alarms: $alarms")
+                }
             }
         }
     }
