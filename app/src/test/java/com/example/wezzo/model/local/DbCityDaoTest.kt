@@ -1,12 +1,9 @@
-package com.example.wezzo
+package com.example.wezzo.model.local
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.wezzo.model.local.dbCity
-import com.example.wezzo.model.local.dbCityDao
-import com.example.wezzo.model.local.dbCityDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
