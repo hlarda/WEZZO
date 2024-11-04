@@ -19,6 +19,8 @@ osmdroidAndroid = "6.1.11"
 playServicesLocation = "21.3.0"
 playServicesMaps = "19.0.0"
 activity = "1.9.3"
+junitKtx = "1.2.1"
+compiler = "3.2.0-alpha11"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +41,8 @@ osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "os
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+androidx-compiler = { group = "androidx.databinding", name = "compiler", version.ref = "compiler" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
