@@ -17,6 +17,9 @@ import org.junit.Test
 import org.mockito.Mockito
 import retrofit2.Response
 import android.content.Context
+import android.content.SharedPreferences
+import com.example.wezzo.model.POJOs.City
+import com.example.wezzo.model.POJOs.GeocodingResponse
 
 class NetworkServiceTest {
 
@@ -24,12 +27,22 @@ class NetworkServiceTest {
     private lateinit var cityDao: dbCityDao
     private lateinit var networkInterface: NetworkInterface
     private lateinit var context: Context
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
 
     @Before
     fun setUp() {
         networkInterface = Mockito.mock(NetworkInterface::class.java)
         cityDao = Mockito.mock(dbCityDao::class.java)
         context = Mockito.mock(Context::class.java)
+        sharedPreferences = Mockito.mock(SharedPreferences::class.java)
+        editor = Mockito.mock(SharedPreferences.Editor::class.java)
+
+        Mockito.`when`(context.getSharedPreferences(Mockito.anyString(), Mockito.anyInt())).thenReturn(sharedPreferences)
+        Mockito.`when`(sharedPreferences.edit()).thenReturn(editor)
+        Mockito.`when`(editor.putString(Mockito.anyString(), Mockito.anyString())).thenReturn(editor)
+        Mockito.`when`(editor.apply()).then { }
+
         networkService = NetworkService
     }
 
@@ -60,5 +73,37 @@ class NetworkServiceTest {
         assertEquals(200, response.code())
         assertEquals("London", response.body()?.name)
         assertEquals(288.11, response.body()?.main?.temp)
+    }
+
+    @Test
+    fun `getCityAndCountry should return forcast`() = runTest {
+        val sampleResponse = Response.success(
+            listOf(
+                GeocodingResponse(
+                    name = "City of Westminster",
+                    local_names = mapOf(
+                        "be" to "Вэстмінстэр",
+                        "ru" to "Вестминстер",
+                        "fr" to "Cité de Westminster",
+                        "cy" to "San Steffan",
+                        "ko" to "시티오브웨스트민스터",
+                        "he" to "וסטמינסטר",
+                        "en" to "City of Westminster",
+                        "mk" to "Град Вестминстер"
+                    ),
+                    lat = 51.4973206,
+                    lon = -0.137149,
+                    country = "GB",
+                    state = "England"
+                )
+            )
+        )
+
+        Mockito.`when`(networkInterface.getCityAndCountry(51.509, -0.1180, "58016d418401e5a0e8e9baef8d569514"))
+            .thenReturn(sampleResponse)
+
+        val response = Repository(networkInterface, cityDao, context).getCityAndCountry(51.509, -0.1180, "58016d418401e5a0e8e9baef8d569514").first()
+        assertEquals(200, response.code())
+        assertEquals("City of Westminster", response.body()?.get(0)?.name)
     }
 }
