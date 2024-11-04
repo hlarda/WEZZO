@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -168,6 +169,7 @@ class MapFragment : Fragment(), MapEventsReceiver {
         val newCity = dbCity(name = city, country = country, latitude = selectedLocation?.first ?: 0.0, longitude = selectedLocation?.second ?: 0.0)
         lifecycleScope.launch {
             cityViewModel.insertCity(newCity)
+            Toast.makeText(requireContext(), newCity.name + "saved", Toast.LENGTH_SHORT).show()
         }
     }
 }
