@@ -1,4 +1,4 @@
-package com.example.wezzo.model.remote
+package com.example.wezzo.network
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -6,7 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 
-class NetworkChangeReceiver(private val listener: NetworkChangeListener?) : BroadcastReceiver() {
+class NetworkChangeReceiver(private val listener: NetworkChangeListener) : BroadcastReceiver() {
 
     interface NetworkChangeListener {
         fun onNetworkChange(isConnected: Boolean)
@@ -14,7 +14,7 @@ class NetworkChangeReceiver(private val listener: NetworkChangeListener?) : Broa
 
     override fun onReceive(context: Context, intent: Intent) {
         val isConnected = NetworkUtils.isNetworkAvailable(context)
-        listener?.onNetworkChange(isConnected)
+        listener.onNetworkChange(isConnected)
     }
 
     fun register(context: Context) {

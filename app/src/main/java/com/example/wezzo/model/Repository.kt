@@ -20,9 +20,9 @@ class Repository(
     context: Context
 ) : IRepository {
 
-    private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private val units: String = sharedPreferences.getString("units", "metric") ?: "metric"
-    private val language: String = sharedPreferences.getString("language", "en") ?: "en"
+    private val sharedPreferences: SharedPreferences? = PreferenceManager.getDefaultSharedPreferences(context)
+    private val units: String = sharedPreferences?.getString("units", "metric") ?: "metric"
+    private val language: String = sharedPreferences?.getString("language", "en") ?: "en"
 
     override fun getWeatherByCity(location: String, appId: String): Flow<Response<Current>> = flow {
         emit(networkService.getWeather(location, appId))

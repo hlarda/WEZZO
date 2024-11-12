@@ -2,6 +2,7 @@ package com.example.wezzo.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wezzo.model.IRepository
 import com.example.wezzo.model.POJOs.Coord
 import com.example.wezzo.model.Repository
 import com.example.wezzo.model.local.dbCity
@@ -13,7 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class WeatherViewModel(private val repository: Repository) : ViewModel() {
+class WeatherViewModel(private val repository: IRepository) : ViewModel() {
 
     private val _weatherResponseStatus = MutableStateFlow<WeatherResponseStatus>(
         WeatherResponseStatus.Loading

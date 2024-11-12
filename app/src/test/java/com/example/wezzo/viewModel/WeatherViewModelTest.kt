@@ -1,16 +1,11 @@
 package com.example.wezzo.viewModel
 
-import android.content.SharedPreferences
-import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.wezzo.model.POJOs.Clouds
-import com.example.wezzo.model.POJOs.Coord
-import com.example.wezzo.model.POJOs.Current
-import com.example.wezzo.model.POJOs.Main
-import com.example.wezzo.model.POJOs.Sys
-import com.example.wezzo.model.POJOs.Weather
-import com.example.wezzo.model.POJOs.Wind
-import com.example.wezzo.model.Repository
+import com.example.wezzo.model.FakeLocalDataSource
+import com.example.wezzo.model.FakeRepository
+import com.example.wezzo.model.POJOs.*
+import com.example.wezzo.model.local.dbCity
+import com.example.wezzo.model.remote.FakeRemoteDataSource
 import com.example.wezzo.screens.home.view.AirPollutionResponseStatus
 import com.example.wezzo.screens.home.view.ForecastResponseStatus
 import com.example.wezzo.screens.home.view.WeatherResponseStatus
@@ -18,60 +13,34 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.mockStatic
-import org.mockito.junit.MockitoJUnitRunner
-import io.mockk.every
-import io.mockk.coEvery
-import io.mockk.mockk
-import io.mockk.mockkStatic
-import kotlinx.coroutines.delay
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody
 import retrofit2.Response
+import kotlin.time.Duration.Companion.seconds
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
 class WeatherViewModelTest {
 
     private lateinit var weatherViewModel: WeatherViewModel
-    private lateinit var repository: Repository
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var sharedPreferencesEditor: SharedPreferences.Editor
+    private lateinit var fakeRepository: FakeRepository
+    private lateinit var fakeRemoteDataSource: FakeRemoteDataSource
+    private lateinit var fakeLocalDataSource: FakeLocalDataSource
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
     @Before
     fun setUp() {
-        sharedPreferences = mockk()
-        sharedPreferencesEditor = mockk()
-        every { sharedPreferences.edit() } returns sharedPreferencesEditor
-
-        // Mocking Repository
-        repository = mockk()
-
-        // Mocking static methods for logging
-        mockkStatic(Log::class)
-        every { Log.d(any(), any()) } returns 0
-        every { Log.i(any(), any()) } returns 0
-        every { Log.e(any(), any()) } returns 0
-
-        // Initializing the ViewModel with mocked repository
-        weatherViewModel = WeatherViewModel(repository)
-    }
-
-    @After
-    fun tearDown() {
-        // Cleanup if necessary
+        fakeRemoteDataSource = FakeRemoteDataSource()
+        fakeLocalDataSource = FakeLocalDataSource()
+        fakeRepository = FakeRepository(fakeRemoteDataSource, fakeLocalDataSource)
+        weatherViewModel = WeatherViewModel(fakeRepository)
     }
 
     @Test
@@ -96,11 +65,7 @@ class WeatherViewModelTest {
         )
         val response = retrofit2.Response.success(mockCurrent)
 
-        coEvery {
-            repository.getWeatherByCity(city, appId)
-        } returns flow {
-            emit(response)
-        }
+        fakeRemoteDataSource.weatherResponse = response
 
         // Act
         weatherViewModel.getWeatherByCity(city, appId)
@@ -109,35 +74,24 @@ class WeatherViewModelTest {
         assertThat(weatherViewModel.weatherResponseStatus.first(), instanceOf(WeatherResponseStatus.Loading::class.java))
         val result = weatherViewModel.weatherResponseStatus.first { it is WeatherResponseStatus.Success }
 
-        // Now, access the correct property
         assertThat(result, instanceOf(WeatherResponseStatus.Success::class.java))
-        val successResult = result as WeatherResponseStatus.Success // Cast to Success
-        assertThat(successResult.weatherResponse, `is`(mockCurrent)) // Access weatherResponse correctly
+        val successResult = result as WeatherResponseStatus.Success
+        assertThat(successResult.weatherResponse, `is`(mockCurrent))
     }
 
     @Test
-    fun getWeatherByCity_failure_updatesWeatherResponseStatus() = runTest {
+    fun getSavedLocations_returnsSavedLocations() = runTest {
         // Arrange
-        val city = "London"
-        val appId = "mock_app_id"
-        val errorBody = ResponseBody.create(
-            "application/json".toMediaTypeOrNull(),
-            """{"cod": 401, "message": "Invalid API key. Please see https://openweathermap.org/faq#error401 for more info."}"""
+        val savedLocations = listOf(
+            dbCity(name = "London", country = "GB", latitude = 51.5085, longitude = -0.1257),
+            dbCity(name = "New York", country = "US", latitude = 40.7128, longitude = -74.0060)
         )
-        val errorResponse = Response.error<Current>(401, errorBody)
-
-        coEvery { repository.getWeatherByCity(city, appId) } returns flow {
-            emit(errorResponse)
-        }
+        fakeLocalDataSource.cities = savedLocations.toMutableList()
 
         // Act
-        weatherViewModel.getWeatherByCity(city, appId)
+        val result = weatherViewModel.getSavedLocations().first()
 
         // Assert
-        assertThat(weatherViewModel.weatherResponseStatus.first(), instanceOf(WeatherResponseStatus.Loading::class.java))
-        val result = weatherViewModel.weatherResponseStatus.first { it is WeatherResponseStatus.Error }
-        assertThat(result, instanceOf(WeatherResponseStatus.Error::class.java))
-        val errorResult = result as WeatherResponseStatus.Error
-        assertThat(errorResult.message, `is`("Error: 401"))
+        assertThat(result, `is`(savedLocations))
     }
 }
